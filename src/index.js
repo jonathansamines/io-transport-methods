@@ -2,6 +2,7 @@
 
 const Joi = require('joi');
 const Hoek = require('hoek');
+const transportMatrixBuilder = require('./transport-matrix');
 
 const internals = {};
 
@@ -35,12 +36,12 @@ internals.createRoutesValidator = (routes) => {
 
       Hoek.assert(
         origination,
-        `The origination specified at [routes[${index}].from=${route.from}] is not valid. Valid originations are [${originations.join(',')}]`
+        `The origination specified at [routes[${index}].from=${route.from}] is not valid. Valid originations are [${originations.join(', ')}]`
       );
 
       Hoek.assert(
         destination,
-        `The destination specified at [routes[${index}].to=${route.to}] is not valid. Valid destinations are [${destinations.join(',')}]`
+        `The destination specified at [routes[${index}].to=${route.to}] is not valid. Valid destinations are [${destinations.join(', ')}]`
       );
     });
   };
@@ -63,8 +64,6 @@ module.exports = {
 
     validateRoutes(opts.originations, opts.destinations);
 
-    return {
-      resolveBy: () => null,
-    };
+    return transportMatrixBuilder.create(opts);
   },
 };
