@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha .",
-    "test:watch": "mocha . -w"
+    "test:watch": "mocha test/*.js -w"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,9 @@
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",
     "mocha": "^3.0.2"
+  },
+  "dependencies": {
+    "hoek": "^4.1.0",
+    "joi": "^9.0.4"
   }
 }

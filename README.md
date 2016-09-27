@@ -15,8 +15,8 @@ Describes the complete transport matrix, as specified by the *IO transport metho
   - `originations` - an array of originations, each origination is a *string*. **Required**
   - `destinations` - an array of destinations, each destination is a *string* **Required**
   - `supply` - an array of supply units. The number of items, has to be equal to the items number defined in `originations`. An error is throw if that condition is not accomplished. **Required**
-  - `demand` - an array of overall demand. The number of items, has to equal to the items number defined in `destinations`. An error is throw if that condition is not accomplished. **Required**
-  - `routes` - an array of items which identify the cost of a given route (**from** a `origination` **to** a `destination`)
+  - `demand` - an array of overall demand. The number of items, has to be equal to the items number defined in `destinations`. An error is throw if that condition is not accomplished. **Required**
+  - `routes` - an array of items which identify the cost of a given route (**from** a `origination` **to** a `destination`). **Required**
     - `from` - a valid origination name. Any string previously specified at the `originations` array. **Required**
     - `to` - a valid destination name. Any string previously specified at the `destinations` array. **Required**
     - `cost` - a valid number specifying the route cost.
