@@ -1,7 +1,5 @@
 'use strict';
 
-const Hoek = require('hoek');
-
 const internals = {};
 
 internals.sortByCheaperDestination = (destinations) => {
@@ -23,10 +21,7 @@ internals.resolveByMinimumCost = (options) => {
   const iterations = [];
   const destinations = options.destinations;
   const originations = options.originations;
-  const routes = internals.completeTransportModel(
-    Hoek.clone(options.routes)
-  );
-  const sortedRoutes = internals.sortByCheaperRoute(routes);
+  const sortedRoutes = internals.sortByCheaperRoute(options.routes);
 
   let cheaperRoute = sortedRoutes[0];
 

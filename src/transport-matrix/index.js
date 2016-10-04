@@ -1,16 +1,13 @@
 'use strict';
 
-const Joi = require('joi');
 const Hoek = require('hoek');
 const minimumCost = require('./minimum-cost');
 
 const internals = {
-  transportMethods: ['minimumCost', 'northwestCorner'],
-  matrixSchema: Joi.object().keys({
-    completeMode: Joi.string()
-      .allow('error', 'complete')
-      .default('complete'),
-  }),
+  transportResolvers: {
+    minimumCost,
+    northwestCorner: null,
+  },
 };
 
 internals.sumByProperty = (items, propertyName) => {
@@ -62,22 +59,25 @@ module.exports = {
   /**
    * Creates a new transport-matrix using valid options from the transport-matrix factory
    */
-  create(transportOptions) {
+  create(options) {
     /**
      * Resolve a given matrix options
      */
     return {
-      resolveBy(transportMethod, options) {
+      resolveBy(transportMethod) {
+        const transportMethods = Object.keys(internals.transportResolvers);
         Hoek.assert(transportMethod, 'No transportMethod was specified.');
         Hoek.assert(
-          internals.transportMethods.indexOf(transportMethod) !== -1,
-          `The transportMethod(${transportMethod}) is invalid. Valid transport methods are [${internals.transportMethods.join(', ')}]`
+          transportMethods.indexOf(transportMethod) !== -1,
+          `The transportMethod(${transportMethod}) is invalid. Valid transport methods are [${transportMethods.join(', ')}]`
         );
 
-        const opts = Joi.attempt(options || {}, internals.matrixSchema, 'The transport options are invalid.');
-        const transportParams = Hoek.clone(transportOptions);
+        const transportOptions = Hoek.clone(options);
+        transportOptions.routes = internals.completeTransportModel(
+          Hoek.clone(transportOptions.routes)
+        );
 
-        return minimumCost.resolve(transportParams, opts);
+        return minimumCost.resolve(transportOptions);
       },
     };
   },
