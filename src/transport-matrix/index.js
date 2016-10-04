@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('transport-matrix');
 const Hoek = require('hoek');
 const minimumCost = require('./minimum-cost');
 
@@ -22,36 +23,61 @@ internals.sumByProperty = (items, propertyName) => {
  * Given a set of routes, destinations and originations
  * completes the transport model by adding the missing destinations or originations
  * based on the demand/supply requirements
- * @param  {Array} routes
- * @param  {Array} destinations
- * @param  {Array} originations
+ * @param  {Array} model.routes
+ * @param  {Array} model.destinations
+ * @param  {Array} model.originations
  * @return {Array} The array of routes, with either the missing destinations or originations added
  */
-internals.completeTransportModel = (routes, destinations, originations) => {
-  const demandSum = internals.sumByProperty(destinations, 'demand');
-  const supplySum = internals.sumByProperty(originations, 'supply');
+internals.completeTransportModel = (model) => {
+  debug('transport model completion process started');
+
+  const demandSum = internals.sumByProperty(model.destinations, 'demand');
+  const supplySum = internals.sumByProperty(model.originations, 'supply');
 
   if (demandSum > supplySum) {
-    routes.push({
-      from: 'origination-added',
-      to: destinations.map((dest) => {
+    debug('the demand is higher than the supply capacity (demand=%s, supply%s)', demandSum, supplySum);
+    debug('adding an additional origination');
+
+    const originationName = 'origination-added';
+
+    model.originations.push({
+      name: originationName,
+      supply: demandSum - supplySum,
+    });
+
+    model.routes.push({
+      from: originationName,
+      to: model.destinations.map((dest) => {
         return {
           destination: dest.name,
-          cost: demandSum - supplySum,
+          cost: 0,
         };
       }),
     });
   } else if (supplySum > demandSum) {
-    // add missing destinations to each origination
-    routes.forEach((route) => {
+    debug('the supply is higher than the total demand (demand=%s, supply%s)', demandSum, supplySum);
+    debug('adding an additional destination');
+
+    const destinationName = 'destination-added';
+
+    model.destinations.push({
+      name: destinationName,
+      demand: supplySum - demandSum,
+    });
+
+    model.routes.forEach((route) => {
       route.to.push({
         destination: 'destination-added',
-        cost: supplySum - demandSum,
+        cost: 0,
       });
     });
   }
 
-  return routes;
+  return {
+    destinations: model.destinations,
+    originations: model.originations,
+    routes: model.routes,
+  };
 };
 
 module.exports = {
@@ -60,6 +86,8 @@ module.exports = {
    * Creates a new transport-matrix using valid options from the transport-matrix factory
    */
   create(options) {
+    debug('creating transport-matrix with options: ', options);
+
     /**
      * Resolve a given matrix options
      */
@@ -72,10 +100,9 @@ module.exports = {
           `The transportMethod(${transportMethod}) is invalid. Valid transport methods are [${transportMethods.join(', ')}]`
         );
 
-        const transportOptions = Hoek.clone(options);
         const resolver = internals.transportResolvers[transportMethod];
-        transportOptions.routes = internals.completeTransportModel(
-          transportOptions.routes
+        const transportOptions = internals.completeTransportModel(
+          Hoek.clone(options)
         );
 
         return resolver.resolve(transportOptions);

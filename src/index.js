@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('main');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const transportMatrixBuilder = require('./transport-matrix');
@@ -7,10 +8,18 @@ const transportMatrixBuilder = require('./transport-matrix');
 const internals = {};
 
 internals.transportSchema = Joi.object().keys({
-  originations: Joi.array().items(Joi.string()).required(),
-  destinations: Joi.array().items(Joi.string()).required(),
-  supply: Joi.array().required(),
-  demand: Joi.array().required(),
+  originations: Joi.array()
+    .items(Joi.object().keys({
+      name: Joi.string().required(),
+      supply: Joi.number().required(),
+    }))
+    .required(),
+  destinations: Joi.array()
+    .items(Joi.object().keys({
+      name: Joi.string().required(),
+      demand: Joi.number().required(),
+    }))
+    .required(),
   routes: Joi
     .array()
     .items(
@@ -29,6 +38,8 @@ internals.transportSchema = Joi.object().keys({
  * @param  {Array} routes List of valid routes
  */
 internals.createRoutesValidator = (routes) => {
+  debug('creating routes validator (originations, destinations)');
+
   return (originations, destinations) => {
     routes.forEach((route, index) => {
       const origination = originations.find((orig) => orig === route.from);
@@ -58,6 +69,8 @@ module.exports = {
   transportMatrix: (options) => {
     const opts = Joi.attempt(options || {}, internals.transportSchema, 'Invalid options provided');
     const validateRoutes = internals.createRoutesValidator(opts.routes);
+
+    debug('routes validated, all originations/destinations references are valid.');
 
     Hoek.assert(opts.originations.length === opts.supply.length, `The number of supply items is different than the originations provided. [supply=${opts.supply.length}, originations=${opts.originations.length}]`);
     Hoek.assert(opts.destinations.length === options.demand.length, `The number of demand items is different than the destinations provided. [demand=${opts.demand.length}], destinations=${opts.destinations.length}]`);
