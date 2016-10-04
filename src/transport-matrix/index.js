@@ -73,11 +73,12 @@ module.exports = {
         );
 
         const transportOptions = Hoek.clone(options);
+        const resolver = internals.transportResolvers[transportMethod];
         transportOptions.routes = internals.completeTransportModel(
           transportOptions.routes
         );
 
-        return minimumCost.resolve(transportOptions);
+        return resolver.resolve(transportOptions);
       },
     };
   },
