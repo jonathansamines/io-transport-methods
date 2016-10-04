@@ -48,12 +48,6 @@ describe('the transport-matrix module', () => {
         expect(resolveByFunction).to.throw(Error, 'The transportMethod(invalidMethod) is invalid. Valid transport methods are [minimumCost, northwestCorner]');
       });
 
-      it('options are optional, completeMode set to "complete" when is not defined', () => {
-        const resolveByFunction = () => transportMatrix.resolveBy('minimumCost');
-
-        expect(resolveByFunction).to.not.throw(Error, 'The transport options are invalid.');
-      });
-
       describe('if all arguments are ok', () => {
         const scenarios = [
           {

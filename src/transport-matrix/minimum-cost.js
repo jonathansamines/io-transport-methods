@@ -27,14 +27,14 @@ internals.resolveByMinimumCost = (options) => {
   const originations = options.originations;
   const sortedRoutes = internals.sortByCheaperRoute(options.routes);
 
-  let cheaperRoute = sortedRoutes[0];
+  let cheaperRoute = sortedRoutes.splice(0, 1)[0];
   const iteration = {
     distribution: [],
     summary: 0,
   };
 
   while (cheaperRoute !== undefined) {
-    let cheaperDestination = cheaperRoute.to[0];
+    let cheaperDestination = cheaperRoute.to.splice(0, 1)[0];
     const cheaperOrigination = cheaperRoute.from;
 
     while (cheaperDestination !== undefined) {
@@ -59,6 +59,8 @@ internals.resolveByMinimumCost = (options) => {
       }
 
       if (isEmptyOrigination) {
+        debug('the origination (%s) is empty. no units can be assigned to destination (%s).', origination.name, destination.name);
+
         assignedRoute.to.push({
           destination: destination.name,
           cost: cheaperDestination.cost,
@@ -71,12 +73,14 @@ internals.resolveByMinimumCost = (options) => {
       }
 
       if (isFulfilledDestination) {
+        debug('the destination (%s) has already been fulfilled. Not units can be assigned to origination (%s)', destination.name, origination.name);
+
         iteration.distribution.forEach((r) => {
           const dest = r.to.find((d) => d.destination === destination.name);
 
           if (dest) {
-            dest.cost = cheaperDestination.cost;
-            dest.units = 0;
+            // dest.cost = cheaperDestination.cost;
+            // dest.units = 0;
 
             return;
           }
@@ -92,17 +96,25 @@ internals.resolveByMinimumCost = (options) => {
         continue;
       }
 
+      debug('preparing the route units assignation for (origination=%s, destination=%s)', origination.name, destination.name);
+
       // assign the maximum amount of units to the current
       // route allowed by the origination/destination limitations
       if (origination.supply > destination.demand) {
+        debug('the supply is higher than the demand. Supplying the overall demand.');
+
         unitsToAssign = destination.demand;
         destination.demand = 0;
         origination.supply -= unitsToAssign;
       } else if (destination.demand >= origination.supply) {
+        debug('the demand is higher or equal than the supply. Supplying the overall capacity.');
+
         unitsToAssign = origination.supply;
         origination.supply = 0;
         destination.demand -= unitsToAssign;
       }
+
+      console.log('assigning', unitsToAssign);
 
       assignedRoute.to.push({
         destination: destination.name,
