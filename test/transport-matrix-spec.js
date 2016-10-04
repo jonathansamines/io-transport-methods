@@ -164,9 +164,72 @@ describe('the transport-matrix module', () => {
                   {
                     summary: 360,
                     distribution: [
-                      [0, 15, 0, 0],
-                      [0, 0, 15, 10],
-                      [5, 0, 0, 0],
+                      [
+                        {
+                          from: 'origination-1',
+                          to: 'destination-1',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-1',
+                          to: 'destination-2',
+                          units: 15,
+                        },
+                        {
+                          from: 'origination-1',
+                          to: 'destination-3',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-1',
+                          to: 'destination-4',
+                          units: 0,
+                        },
+                      ],
+                      [
+                        {
+                          from: 'origination-2',
+                          to: 'destination-1',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-2',
+                          to: 'destination-2',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-2',
+                          to: 'destination-3',
+                          units: 15,
+                        },
+                        {
+                          from: 'origination-2',
+                          to: 'destination-4',
+                          units: 10,
+                        },
+                      ],
+                      [
+                        {
+                          from: 'origination-3',
+                          to: 'destination-1',
+                          units: 5,
+                        },
+                        {
+                          from: 'origination-3',
+                          to: 'destination-2',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-3',
+                          to: 'destination-3',
+                          units: 0,
+                        },
+                        {
+                          from: 'origination-3',
+                          to: 'destination-4',
+                          units: 0,
+                        },
+                      ],
                     ],
                   },
                 ],

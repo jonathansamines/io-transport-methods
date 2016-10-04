@@ -93,6 +93,13 @@ internals.resolveByMinimumCost = (options) => {
 
     cheaperRoute = sortedRoutes.splice(0, 1)[0];
   }
+
+  return {
+    iterations,
+    result: {
+      summary: 0,
+    },
+  };
 };
 
 module.exports = {
