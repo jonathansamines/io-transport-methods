@@ -12,23 +12,27 @@ The public API is as follows:
 Describes the complete transport matrix, as specified by the *IO transport methods* specification. The generated matrix can be computed by any of the allowed transport methods. Returns a **TransportMatrix**
 
 + `options`
-  - `originations` - an array of originations, each origination is a *string*. **Required**
-  - `destinations` - an array of destinations, each destination is a *string* **Required**
-  - `supply` - an array of supply units. The number of items, has to be equal to the items number defined in `originations`. An error is throw if that condition is not accomplished. **Required**
-  - `demand` - an array of overall demand. The number of items, has to be equal to the items number defined in `destinations`. An error is throw if that condition is not accomplished. **Required**
-  - `routes` - an array of items which identify the cost of a given route (**from** a `origination` **to** a `destination`). **Required**
+  - `originations` - an array of originations, each origination is an *object* with the following schema.
+    - `name` - the origination name. **Required**
+    - `supply` - the supply units available. **Required**
+  - `destinations` - an array of destinations, each destination is an *object* with the following schema.
+    - `name` - the destination name. **Required**
+    - `demand` - the demand units. **Required**
+  - `routes` - an array of items which identify the cost of a given route (**from** a `origination` **to** a `destination`).
     - `from` - a valid origination name. Any string previously specified at the `originations` array. **Required**
-    - `to` - a valid destination name. Any string previously specified at the `destinations` array. **Required**
-    - `cost` - a valid number specifying the route cost.
+    - `to` - an array with valid destinations.
+      - `destination` - a valid destination name. Any string previously specified at the `destinations` array. **Required**
+      - `cost` - a valid number specifying the route cost. **Required**
+
+#### About the model
+If the transport model is not considered complete (the overall supply is different from the overall demand), additional destinations or originations are added as needed.
 
 ### TransportMatrix
-It represents the logic form of the transport method. Has the ability to compute the best supply/demand distribution based on the *transport method** specified.
+It represents the logic form of the transport method. Has the ability to compute the best supply/demand distribution based on the **transport method** specified.
 
 #### `transportMatrix.resolveBy(transportMethod, options)`
 
 + `transportMethod` - any of the allowed transport methods: [`minimumCost`, `northwestCorner`]
-+ `options`
-  - `completeMode` - any of the following values: `error` to throw if the destinations/originations array have not the same length. `complete` to indicate the matrix to compute the missing values on either the destination or origination with the remaining units. Default to `complete`.
 
 ### Usage
 
@@ -39,25 +43,43 @@ It represents the logic form of the transport method. Has the ability to compute
 
   const matrix = io.transportMatrix({
     originations: [
-      'origination-1',
-      'origination-2'
+      {
+        name: 'origination-1',
+        supply: 10,
+      },
+      {
+        name: 'origination-2',
+        supply: 20,
+      },
     ],
     destinations: [
-      'destination-1',
-      'destination-2'
+      {
+        name: 'destination-1',,
+        demand: 15,
+      },
+      {
+        name: 'destination-2',
+        demand: 5,
+      },
     ],
-    supply: [10, 20],
-    demand: [15, 5],
-    costMatrix: [
+    routes: [
       {
         from: 'origination-1',
-        to: 'destination-1',
-        cost: 20
+        to: [
+          {
+            destination: 'destination-1',
+            cost: 20,
+          }
+        ]
       },
       {
         from: 'origination-1',
-        to: 'destination-2',
-        cost: 10
+        to: [
+          {
+            destination: 'destination-2',
+            cost: 10,
+          },
+        ]
       }
     ],
   });

@@ -1,6 +1,7 @@
 'use strict';
 
 const debug = require('debug')('transport-matrix/minimum-cost');
+
 const internals = {};
 
 internals.sortByCheaperDestination = (destinations) => {
