@@ -24,52 +24,72 @@ internals.resolveByMinimumCost = (options) => {
   const sortedRoutes = internals.sortByCheaperRoute(options.routes);
 
   let cheaperRoute = sortedRoutes[0];
+  const iteration = {
+    distribution: [],
+    summary: 0,
+  };
 
   while (cheaperRoute !== undefined) {
-    const iteration = {
-      distribution: [],
-      summary: 0,
-    };
-
-    const cheaperOrigination = cheaperRoute.from;
     let cheaperDestination = cheaperRoute.to[0];
-
-    let route = iteration.distribution
-      .find((r) => r.from === cheaperOrigination);
-
-    if (route === undefined) {
-      route = {
-        from: cheaperOrigination,
-        to: [],
-      };
-
-      iteration.distribution.push(route);
-    }
+    const cheaperOrigination = cheaperRoute.from;
 
     while (cheaperDestination !== undefined) {
       let unitsToAssign = 0;
       const origination = originations.find((orig) => orig.name === cheaperOrigination);
       const destination = destinations.find((dest) => dest.name === cheaperDestination.destination);
 
+      // we need to verify if the current row still have assignable routes
       const isEmptyOrigination = origination.supply <= 0;
       const isFulfilledDestination = destination.demand <= 0;
 
+      let assignedRoute = iteration
+        .distribution
+        .find((r) => r.from === origination.name);
+
+      if (assignedRoute === undefined) {
+        assignedRoute = {
+          from: origination.name,
+          to: [],
+        };
+        iteration.distribution.push(assignedRoute);
+      }
+
       if (isEmptyOrigination) {
-        route.to.push({
+        assignedRoute.to.push({
           destination: destination.name,
           cost: cheaperDestination.cost,
           units: 0,
         });
+
+        cheaperDestination = cheaperRoute.to.splice(0, 1)[0];
+
+        continue;
       }
 
       if (isFulfilledDestination) {
-        route.to.push({
-          destination: destination.name,
-          cost: cheaperDestination.cost,
-          units: 0,
+        iteration.distribution.forEach((r) => {
+          const dest = r.to.find((d) => d.destination === destination.name);
+
+          if (dest) {
+            dest.cost = cheaperDestination.cost;
+            dest.units = 0;
+
+            return;
+          }
+
+          r.to.push({
+            destination: destination.name,
+            cost: cheaperDestination.cost,
+            units: 0,
+          });
         });
+
+        cheaperDestination = cheaperRoute.to.splice(0, 1)[0];
+        continue;
       }
 
+      // assign the maximum amount of units to the current
+      // route allowed by the origination/destination limitations
       if (origination.supply > destination.demand) {
         unitsToAssign = destination.demand;
         destination.demand = 0;
@@ -80,7 +100,7 @@ internals.resolveByMinimumCost = (options) => {
         destination.demand -= unitsToAssign;
       }
 
-      route.to.push({
+      assignedRoute.to.push({
         destination: destination.name,
         cost: cheaperDestination.cost,
         units: unitsToAssign,
@@ -94,8 +114,10 @@ internals.resolveByMinimumCost = (options) => {
     cheaperRoute = sortedRoutes.splice(0, 1)[0];
   }
 
+  console.log(JSON.stringify(iteration));
+
   return {
-    iterations,
+    iterations: iteration,
     result: {
       summary: 0,
     },

@@ -167,67 +167,70 @@ describe('the transport-matrix module', () => {
                       [
                         {
                           from: 'origination-1',
-                          to: 'destination-1',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-1',
-                          to: 'destination-2',
-                          units: 15,
-                        },
-                        {
-                          from: 'origination-1',
-                          to: 'destination-3',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-1',
-                          to: 'destination-4',
-                          units: 0,
-                        },
-                      ],
-                      [
-                        {
-                          from: 'origination-2',
-                          to: 'destination-1',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-2',
-                          to: 'destination-2',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-2',
-                          to: 'destination-3',
-                          units: 15,
-                        },
-                        {
-                          from: 'origination-2',
-                          to: 'destination-4',
-                          units: 10,
+                          to: [
+                            {
+                              destination: 'destination-1',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-2',
+                              units: 15,
+                            },
+                            {
+                              destination: 'destination-3',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-4',
+                              units: 0,
+                            },
+                          ],
                         },
                       ],
                       [
                         {
-                          from: 'origination-3',
-                          to: 'destination-1',
-                          units: 5,
+                          from: 'origination-2',
+                          to: [
+                            {
+                              destination: 'destination-1',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-2',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-3',
+                              units: 15,
+                            },
+                            {
+                              destination: 'destination-4',
+                              units: 10,
+                            },
+                          ],
                         },
+                      ],
+                      [
                         {
                           from: 'origination-3',
-                          to: 'destination-2',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-3',
-                          to: 'destination-3',
-                          units: 0,
-                        },
-                        {
-                          from: 'origination-3',
-                          to: 'destination-4',
-                          units: 0,
+                          to: [
+                            {
+                              destination: 'destination-1',
+                              units: 5,
+                            },
+                            {
+                              destination: 'destination-2',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-3',
+                              units: 0,
+                            },
+                            {
+                              destination: 'destination-4',
+                              units: 0,
+                            },
+                          ],
                         },
                       ],
                     ],
