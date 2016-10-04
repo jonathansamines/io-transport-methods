@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('transport-matrix/minimum-cost');
 const internals = {};
 
 internals.sortByCheaperDestination = (destinations) => {
@@ -18,6 +19,8 @@ internals.sortByCheaperRoute = (routes) => {
 };
 
 internals.resolveByMinimumCost = (options) => {
+  debug('resolving transport model by minimum-cost');
+
   const iterations = [];
   const destinations = options.destinations;
   const originations = options.originations;

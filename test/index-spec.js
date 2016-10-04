@@ -27,8 +27,6 @@ describe('the io module', () => {
       const transportFunction = () => ioModule.transportMatrix({
         originations: [],
         destinations: [],
-        supply: [],
-        demand: [],
         // missing routes
       });
 
@@ -39,8 +37,6 @@ describe('the io module', () => {
       const transportFunction = () => ioModule.transportMatrix({
         originations: [],
         destinations: [],
-        supply: [],
-        demand: [],
         routes: [
           {
             from: 'origination-1',
@@ -55,15 +51,27 @@ describe('the io module', () => {
 
     it('with a non-valid destination at routes.to, throws an error', () => {
       const transportFunction = () => ioModule.transportMatrix({
-        originations: ['origination-1'],
-        destinations: ['destination-1'],
-        supply: [10],
-        demand: [10],
+        originations: [
+          {
+            name: 'origination-1',
+            supply: 10,
+          },
+        ],
+        destinations: [
+          {
+            name: 'destination-1',
+            demand: 10,
+          },
+        ],
         routes: [
           {
             from: 'origination-1',
-            to: 'destination-2',
-            cost: 200,
+            to: [
+              {
+                destination: 'destination-2',
+                cost: 200,
+              },
+            ],
           },
         ],
       });
@@ -73,15 +81,27 @@ describe('the io module', () => {
 
     it('with a non-valid origination at routes.from value, throws an error', () => {
       const transportFunction = () => ioModule.transportMatrix({
-        originations: ['origination-1'],
-        destinations: ['destination-1'],
-        supply: [10],
-        demand: [10],
+        originations: [
+          {
+            name: 'origination-1',
+            supply: 10,
+          },
+        ],
+        destinations: [
+          {
+            name: 'destination-1',
+            demand: 10,
+          },
+        ],
         routes: [
           {
             from: 'origination-2',
-            to: 'destination-1',
-            cost: 200,
+            to: [
+              {
+                destination: 'destination-1',
+                cost: 200,
+              },
+            ],
           },
         ],
       });
@@ -89,41 +109,29 @@ describe('the io module', () => {
       expect(transportFunction).to.throw(Error, 'The origination specified at [routes[0].from=origination-2] is not valid. Valid originations are [origination-1]');
     });
 
-    it('but the originations length is different than the supply length, throws an error', () => {
-      const transportFunction = () => ioModule.transportMatrix({
-        originations: ['origination-1'],
-        destinations: ['destination-1'],
-        supply: [10, 20],
-        demand: [5],
-        routes: [],
-      });
-
-      expect(transportFunction).to.throw(Error, 'The number of supply items is different than the originations provided.');
-    });
-
-    it('but the destinations length is different than the demand length, throws an error', () => {
-      const transportFunction = () => ioModule.transportMatrix({
-        originations: ['origination-1'],
-        destinations: ['destination-1'],
-        supply: [10],
-        demand: [5, 10],
-        routes: [],
-      });
-
-      expect(transportFunction).to.throw(Error, 'The number of demand items is different than the destinations provided.');
-    });
-
     it('all options are correctly passed, returns a Transportmatrix object', () => {
       const matrix = ioModule.transportMatrix({
-        originations: ['origination-1'],
-        destinations: ['destination-1'],
-        supply: [10],
-        demand: [10],
+        originations: [
+          {
+            name: 'origination-1',
+            supply: 10,
+          },
+        ],
+        destinations: [
+          {
+            name: 'destination-1',
+            demand: 10,
+          },
+        ],
         routes: [
           {
             from: 'origination-1',
-            to: 'destination-1',
-            cost: 100,
+            to: [
+              {
+                destination: 'destination-1',
+                cost: 100,
+              },
+            ],
           },
         ],
       });
