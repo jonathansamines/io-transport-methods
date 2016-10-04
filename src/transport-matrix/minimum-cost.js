@@ -19,14 +19,6 @@ internals.sortByCheaperRoute = (routes) => {
   });
 };
 
-internals.sumByProperty = (items, propertyName) => {
-  return (items || []).reduce((sum, item) => {
-    sum += item[propertyName] || 0;
-
-    return sum;
-  }, 0);
-};
-
 internals.resolveByMinimumCost = (options) => {
   const iterations = [];
   const destinations = options.destinations;

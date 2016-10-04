@@ -13,12 +13,28 @@ const internals = {
   }),
 };
 
+internals.sumByProperty = (items, propertyName) => {
+  return (items || []).reduce((sum, item) => {
+    sum += item[propertyName] || 0;
+
+    return sum;
+  }, 0);
+};
+
+/**
+ * Given a set of routes, destinations and originations
+ * completes the transport model by adding the missing destinations or originations
+ * based on the demand/supply requirements
+ * @param  {Array} routes
+ * @param  {Array} destinations
+ * @param  {Array} originations
+ * @return {Array} The array of routes, with either the missing destinations or originations added
+ */
 internals.completeTransportModel = (routes, destinations, originations) => {
   const demandSum = internals.sumByProperty(destinations, 'demand');
   const supplySum = internals.sumByProperty(originations, 'supply');
 
   if (demandSum > supplySum) {
-    // add missing origination
     routes.push({
       from: 'origination-added',
       to: destinations.map((dest) => {
