@@ -1,16 +1,8 @@
 'use strict';
 
-const Joi = require('joi');
 const Hoek = require('hoek');
 
-const internals = {
-  transportMethods: ['minimumCost', 'northwestCorner'],
-  matrixSchema: Joi.object().keys({
-    completeMode: Joi.string()
-      .allow('error', 'complete')
-      .default('complete'),
-  }),
-};
+const internals = {};
 
 internals.sortByCheaperDestination = (destinations) => {
   return destinations.sort((dest1, dest2) => {
@@ -33,33 +25,6 @@ internals.sumByProperty = (items, propertyName) => {
 
     return sum;
   }, 0);
-};
-
-internals.completeTransportModel = (routes, destinations, originations) => {
-  const demandSum = internals.sumByProperty(destinations, 'demand');
-  const supplySum = internals.sumByProperty(originations, 'supply');
-
-  // complete the missing supplies or demands
-  if (demandSum > supplySum) {
-    routes.push({
-      from: 'origination-added',
-      to: destinations.map((dest) => {
-        return {
-          destination: dest.name,
-          cost: demandSum - supplySum,
-        };
-      }),
-    });
-  } else if (supplySum > demandSum) {
-    routes.forEach((route) => {
-      route.to.push({
-        destination: 'destination-added',
-        cost: supplySum - demandSum,
-      });
-    });
-  }
-
-  return routes;
 };
 
 internals.resolveByMinimumCost = (options) => {
@@ -141,32 +106,8 @@ internals.resolveByMinimumCost = (options) => {
 
     cheaperRoute = sortedRoutes.splice(0, 1)[0];
   }
-
-  console.log(JSON.stringify(iterations));
 };
 
 module.exports = {
-
-  /**
-   * Creates a new transport-matrix using valid options from the transport-matrix factory
-   */
-  create(transportOptions) {
-    /**
-     * Resolve a given matrix options
-     */
-    return {
-      resolveBy(transportMethod, options) {
-        Hoek.assert(transportMethod, 'No transportMethod was specified.');
-        Hoek.assert(
-          internals.transportMethods.indexOf(transportMethod) !== -1,
-          `The transportMethod(${transportMethod}) is invalid. Valid transport methods are [${internals.transportMethods.join(', ')}]`
-        );
-
-        const opts = Joi.attempt(options || {}, internals.matrixSchema, 'The transport options are invalid.');
-        const transportParams = Hoek.clone(transportOptions);
-
-        return internals.resolveByMinimumCost(transportParams, opts);
-      },
-    };
-  },
+  resolve: internals.resolveByMinimumCost,
 };
