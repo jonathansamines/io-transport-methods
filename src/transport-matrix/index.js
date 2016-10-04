@@ -74,7 +74,7 @@ module.exports = {
 
         const transportOptions = Hoek.clone(options);
         transportOptions.routes = internals.completeTransportModel(
-          Hoek.clone(transportOptions.routes)
+          transportOptions.routes
         );
 
         return minimumCost.resolve(transportOptions);
