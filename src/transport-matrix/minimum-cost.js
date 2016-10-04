@@ -19,6 +19,18 @@ internals.sortByCheaperRoute = (routes) => {
   });
 };
 
+internals.computeObjectiveValue = (iteration) => {
+  let zValue = 0;
+
+  iteration.distribution.forEach((route) => {
+    route.to.forEach((dest) => {
+      zValue += dest.cost * dest.units;
+    });
+  });
+
+  return zValue;
+};
+
 internals.resolveByMinimumCost = (options) => {
   debug('resolving transport model by minimum-cost');
 
@@ -114,8 +126,6 @@ internals.resolveByMinimumCost = (options) => {
         destination.demand -= unitsToAssign;
       }
 
-      console.log('assigning', unitsToAssign);
-
       assignedRoute.to.push({
         destination: destination.name,
         cost: cheaperDestination.cost,
@@ -130,10 +140,14 @@ internals.resolveByMinimumCost = (options) => {
     cheaperRoute = sortedRoutes.splice(0, 1)[0];
   }
 
+  iteration.summary = internals.computeObjectiveValue(iteration);
+
   console.log(JSON.stringify(iteration));
 
   return {
-    iterations: iteration,
+    iterations: [
+      iteration,
+    ],
     result: {
       summary: 0,
     },

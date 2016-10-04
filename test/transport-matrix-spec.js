@@ -134,7 +134,7 @@ describe('the transport-matrix module', () => {
                   to: [
                     {
                       destination: 'destination-1',
-                      cost: 5,
+                      cost: 2,
                     },
                     {
                       destination: 'destination-2',
