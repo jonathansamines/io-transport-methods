@@ -1,13 +1,14 @@
 'use strict';
 
 const debug = require('debug')('transport-matrix/minimum-cost');
+const Hoek = require('hoek');
 
 const internals = {};
 
 internals.sortByCheaperDestination = (destinations) => {
-  return destinations.sort((dest1, dest2) => {
-    return dest1.cost - dest2.cost;
-  });
+  return destinations.sort((dest1, dest2) => (
+    dest1.cost - dest2.cost
+  ));
 };
 
 internals.sortByCheaperRoute = (routes) => {
@@ -31,19 +32,44 @@ internals.computeObjectiveValue = (iteration) => {
   return zValue;
 };
 
-internals.resolveByMinimumCost = (options) => {
-  debug('resolving transport model by minimum-cost');
+internals.recordOriginalOrdering = (routes) => {
+  return routes.map((route, index) => {
+    route.index = index;
 
+    route.to.forEach((dest, idx) => {
+      dest.index = idx;
+    });
+
+    return route;
+  });
+};
+
+internals.restoreOrdering = (routes) => {
+  return routes
+    .sort((route1, route2) => route1.index - route2.index)
+    .map((route) => {
+      route.to
+        .sort((dest1, dest2) => dest1.index - dest2.index)
+        .forEach((dest) => delete dest.index);
+
+      delete route.index;
+
+      return route;
+    });
+};
+
+internals.resolveByMinimumCost = (options) => {
   const iterations = [];
   const destinations = options.destinations;
   const originations = options.originations;
-  const sortedRoutes = internals.sortByCheaperRoute(options.routes);
+  const routes = options.routes;
 
-  let cheaperRoute = sortedRoutes.splice(0, 1)[0];
   const iteration = {
     distribution: [],
     summary: 0,
   };
+
+  let cheaperRoute = routes.splice(0, 1)[0];
 
   while (cheaperRoute !== undefined) {
     let cheaperDestination = cheaperRoute.to.splice(0, 1)[0];
@@ -64,9 +90,11 @@ internals.resolveByMinimumCost = (options) => {
 
       if (assignedRoute === undefined) {
         assignedRoute = {
+          index: cheaperRoute.index,
           from: origination.name,
           to: [],
         };
+
         iteration.distribution.push(assignedRoute);
       }
 
@@ -74,6 +102,7 @@ internals.resolveByMinimumCost = (options) => {
         debug('the origination (%s) is empty. no units can be assigned to destination (%s).', origination.name, destination.name);
 
         assignedRoute.to.push({
+          index: cheaperDestination.index,
           destination: destination.name,
           cost: cheaperDestination.cost,
           units: 0,
@@ -91,13 +120,11 @@ internals.resolveByMinimumCost = (options) => {
           const dest = r.to.find((d) => d.destination === destination.name);
 
           if (dest) {
-            // dest.cost = cheaperDestination.cost;
-            // dest.units = 0;
-
             return;
           }
 
           r.to.push({
+            index: cheaperDestination.index,
             destination: destination.name,
             cost: cheaperDestination.cost,
             units: 0,
@@ -127,6 +154,7 @@ internals.resolveByMinimumCost = (options) => {
       }
 
       assignedRoute.to.push({
+        index: cheaperDestination.index,
         destination: destination.name,
         cost: cheaperDestination.cost,
         units: unitsToAssign,
@@ -137,23 +165,34 @@ internals.resolveByMinimumCost = (options) => {
 
     iterations.push(iteration);
 
-    cheaperRoute = sortedRoutes.splice(0, 1)[0];
+    cheaperRoute = routes.splice(0, 1)[0];
   }
 
   iteration.summary = internals.computeObjectiveValue(iteration);
-
-  console.log(JSON.stringify(iteration));
+  iteration.distribution = internals.restoreOrdering(iteration.distribution);
 
   return {
     iterations: [
-      iteration,
+      [
+        iteration,
+      ],
     ],
     result: {
-      summary: 0,
+      summary: iteration.summary,
     },
   };
 };
 
 module.exports = {
-  resolve: internals.resolveByMinimumCost,
+  resolve: (opts) => {
+    debug('resolving transport model by minimum-cost');
+
+    const routes = internals.recordOriginalOrdering(opts.routes);
+    const sortedRoutes = internals.sortByCheaperRoute(routes);
+    const options = Hoek.applyToDefaults(opts, {
+      routes: sortedRoutes,
+    });
+
+    return internals.resolveByMinimumCost(options);
+  },
 };

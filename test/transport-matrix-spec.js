@@ -158,75 +158,81 @@ describe('the transport-matrix module', () => {
                   {
                     summary: 360,
                     distribution: [
-                      [
-                        {
-                          from: 'origination-1',
-                          to: [
-                            {
-                              destination: 'destination-1',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-2',
-                              units: 15,
-                            },
-                            {
-                              destination: 'destination-3',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-4',
-                              units: 0,
-                            },
-                          ],
-                        },
-                      ],
-                      [
-                        {
-                          from: 'origination-2',
-                          to: [
-                            {
-                              destination: 'destination-1',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-2',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-3',
-                              units: 15,
-                            },
-                            {
-                              destination: 'destination-4',
-                              units: 10,
-                            },
-                          ],
-                        },
-                      ],
-                      [
-                        {
-                          from: 'origination-3',
-                          to: [
-                            {
-                              destination: 'destination-1',
-                              units: 5,
-                            },
-                            {
-                              destination: 'destination-2',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-3',
-                              units: 0,
-                            },
-                            {
-                              destination: 'destination-4',
-                              units: 0,
-                            },
-                          ],
-                        },
-                      ],
+                      {
+                        from: 'origination-1',
+                        to: [
+                          {
+                            destination: 'destination-1',
+                            cost: 10,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-2',
+                            cost: 1,
+                            units: 15,
+                          },
+                          {
+                            destination: 'destination-3',
+                            cost: 20,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-4',
+                            cost: 11,
+                            units: 0,
+                          },
+                        ],
+                      },
+                      {
+                        from: 'origination-2',
+                        to: [
+                          {
+                            destination: 'destination-1',
+                            cost: 12,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-2',
+                            cost: 7,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-3',
+                            cost: 9,
+                            units: 15,
+                          },
+                          {
+                            destination: 'destination-4',
+                            cost: 20,
+                            units: 10,
+                          },
+                        ],
+                      },
+                      {
+                        from: 'origination-3',
+                        to: [
+                          {
+                            destination: 'destination-1',
+                            cost: 2,
+                            units: 5,
+                          },
+                          {
+                            destination: 'destination-2',
+                            cost: 14,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-3',
+                            cost: 16,
+                            units: 0,
+                          },
+                          {
+                            destination: 'destination-4',
+                            cost: 18,
+                            units: 0,
+                          },
+                        ],
+                      },
                     ],
                   },
                 ],
