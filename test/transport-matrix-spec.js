@@ -39,13 +39,13 @@ describe('the transport-matrix module', () => {
       it('throws an error if no tranportMethod is specified', () => {
         const resolveByFunction = () => transportMatrix.resolveBy();
 
-        expect(resolveByFunction).to.throw(Error, 'No transportMethod was specified.');
+        expect(resolveByFunction).to.throw(Error, 'No transport method was specified.');
       });
 
       it('throws an error if an invalid transportMethod is specified', () => {
         const resolveByFunction = () => transportMatrix.resolveBy('invalidMethod');
 
-        expect(resolveByFunction).to.throw(Error, 'The transportMethod(invalidMethod) is invalid. Valid transport methods are [minimumCost, northwestCorner]');
+        expect(resolveByFunction).to.throw(Error, 'The transport method(invalidMethod) is invalid. Valid transport methods are [minimumCost, northwestCorner]');
       });
 
       describe('if all arguments are ok', () => {

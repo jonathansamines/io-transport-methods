@@ -13,6 +13,8 @@ const internals = {
   },
 };
 
+internals.transportMethods = Object.keys(internals.transportResolvers);
+
 /**
  * Given a set of routes, destinations and originations
  * completes the transport model by adding the missing destinations or originations
@@ -23,8 +25,6 @@ const internals = {
  * @return {Array} The array of routes, with either the missing destinations or originations added
  */
 internals.completeTransportModel = (model) => {
-  debug('transport model completion process started');
-
   const demandSum = Util.sumByProperty(model.destinations, 'demand');
   const supplySum = Util.sumByProperty(model.originations, 'supply');
 
@@ -78,6 +78,7 @@ module.exports = {
 
   /**
    * Creates a new transport-matrix using valid options from the transport-matrix factory
+   * @param {Object} options Transport matrix options
    */
   create(options) {
     debug('creating transport-matrix with options: ', options);
@@ -88,11 +89,10 @@ module.exports = {
      */
     return {
       resolveBy(transportMethod) {
-        const transportMethods = Object.keys(internals.transportResolvers);
-        Hoek.assert(transportMethod, 'No transportMethod was specified.');
+        Hoek.assert(transportMethod, 'No transport method was specified.');
         Hoek.assert(
-          transportMethods.indexOf(transportMethod) !== -1,
-          `The transportMethod(${transportMethod}) is invalid. Valid transport methods are [${transportMethods.join(', ')}]`
+          internals.transportMethods.indexOf(transportMethod) !== -1,
+          `The transport method(${transportMethod}) is invalid. Valid transport methods are [${internals.transportMethods.join(', ')}]`
         );
 
         const resolver = internals.transportResolvers[transportMethod];
