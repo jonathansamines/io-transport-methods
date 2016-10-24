@@ -2,6 +2,7 @@
 
 const debug = require('debug')('transport-matrix');
 const Hoek = require('hoek');
+const Util = require('./../utils');
 const minimumCost = require('./minimum-cost');
 const northwestCorner = require('./northwest-corner');
 
@@ -10,14 +11,6 @@ const internals = {
     minimumCost,
     northwestCorner,
   },
-};
-
-internals.sumByProperty = (items, propertyName) => {
-  return (items || []).reduce((sum, item) => {
-    sum += item[propertyName] || 0;
-
-    return sum;
-  }, 0);
 };
 
 /**
@@ -32,8 +25,8 @@ internals.sumByProperty = (items, propertyName) => {
 internals.completeTransportModel = (model) => {
   debug('transport model completion process started');
 
-  const demandSum = internals.sumByProperty(model.destinations, 'demand');
-  const supplySum = internals.sumByProperty(model.originations, 'supply');
+  const demandSum = Util.sumByProperty(model.destinations, 'demand');
+  const supplySum = Util.sumByProperty(model.originations, 'supply');
 
   if (demandSum > supplySum) {
     debug('the demand is higher than the supply capacity (demand=%s, supply%s)', demandSum, supplySum);

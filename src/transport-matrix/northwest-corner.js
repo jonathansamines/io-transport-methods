@@ -2,7 +2,7 @@
 
 const debug = require('debug')('transport-matrix/northwest-corner');
 const Hoek = require('hoek');
-const Utils = require('./../utils');
+const Util = require('./../utils');
 
 const internals = {};
 
@@ -113,7 +113,7 @@ internals.resolveByNorthwestCorner = (options) => {
     cheaperRoute = routes.splice(0, 1)[0];
   }
 
-  iteration.summary = Utils.computeObjectiveValue(iteration);
+  iteration.summary = Util.computeObjectiveValue(iteration);
 
   return iteration;
 };

@@ -40,8 +40,12 @@ internals.restoreOrdering = (routes) => {
     });
 };
 
-module.exports = {
-  computeObjectiveValue: internals.computeObjectiveValue,
-  recordOriginalOrdering: internals.recordOriginalOrdering,
-  restoreOrdering: internals.restoreOrdering,
+internals.sumByProperty = (items, propertyName) => {
+  return (items || []).reduce((sum, item) => {
+    sum += item[propertyName] || 0;
+
+    return sum;
+  }, 0);
 };
+
+module.exports = internals;

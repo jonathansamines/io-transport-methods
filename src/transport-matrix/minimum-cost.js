@@ -3,7 +3,7 @@
 const debug = require('debug')('transport-matrix/minimum-cost');
 const Hoek = require('hoek');
 const NorthWestCorner = require('./northwest-corner');
-const Utils = require('./../utils');
+const Util = require('./../utils');
 
 const internals = {};
 
@@ -26,7 +26,7 @@ module.exports = {
   resolve: (opts) => {
     debug('resolving transport model by minimum-cost');
 
-    const routes = Utils.recordOriginalOrdering(opts.routes);
+    const routes = Util.recordOriginalOrdering(opts.routes);
     const sortedRoutes = internals.sortByCheaperRoute(routes);
     const options = Hoek.applyToDefaults(opts, {
       routes: sortedRoutes,
@@ -35,7 +35,7 @@ module.exports = {
     // eslint-disable-next-line no-underscore-dangle
     const iteration = NorthWestCorner._resolve(options);
 
-    iteration.distribution = Utils.restoreOrdering(iteration.distribution);
+    iteration.distribution = Util.restoreOrdering(iteration.distribution);
 
     return {
       iterations: [
