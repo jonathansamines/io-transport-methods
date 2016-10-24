@@ -26,7 +26,7 @@ module.exports = {
   resolve: (opts) => {
     debug('resolving transport model by minimum-cost');
 
-    const routes = Util.recordOriginalOrdering(opts.routes);
+    const routes = Util.recordOrdering(opts.routes);
     const sortedRoutes = internals.sortByCheaperRoute(routes);
     const options = Hoek.applyToDefaults(opts, {
       routes: sortedRoutes,

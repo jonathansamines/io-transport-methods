@@ -113,21 +113,9 @@ internals.resolveByNorthwestCorner = (options) => {
     cheaperRoute = routes.splice(0, 1)[0];
   }
 
-  iteration.summary = Util.computeObjectiveValue(iteration);
+  iteration.summary = Util.computeObjectiveValue(iteration.distribution);
 
   return iteration;
-};
-
-internals.removeIndexing = (routes) => {
-  return routes
-    .map((route) => {
-      route.to
-        .forEach((dest) => delete dest.index);
-
-      delete route.index;
-
-      return route;
-    });
 };
 
 module.exports = {
@@ -143,7 +131,7 @@ module.exports = {
     const opts = Hoek.clone(options);
     const iteration = internals.resolveByNorthwestCorner(opts);
 
-    iteration.distribution = internals.removeIndexing(iteration.distribution);
+    iteration.distribution = Util.clearOrdering(iteration.distribution);
 
     return {
       iterations: [

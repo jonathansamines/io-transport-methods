@@ -2,10 +2,10 @@
 
 const internals = {};
 
-internals.computeObjectiveValue = (iteration) => {
+internals.computeObjectiveValue = (routes) => {
   let zValue = 0;
 
-  iteration.distribution.forEach((route) => {
+  routes.forEach((route) => {
     route.to.forEach((dest) => {
       zValue += dest.cost * dest.units;
     });
@@ -14,7 +14,7 @@ internals.computeObjectiveValue = (iteration) => {
   return zValue;
 };
 
-internals.recordOriginalOrdering = (routes) => {
+internals.recordOrdering = (routes) => {
   return routes.map((route, index) => {
     route.index = index;
 
@@ -32,6 +32,18 @@ internals.restoreOrdering = (routes) => {
     .map((route) => {
       route.to
         .sort((dest1, dest2) => dest1.index - dest2.index)
+        .forEach((dest) => delete dest.index);
+
+      delete route.index;
+
+      return route;
+    });
+};
+
+internals.clearOrdering = (routes) => {
+  return routes
+    .map((route) => {
+      route.to
         .forEach((dest) => delete dest.index);
 
       delete route.index;
