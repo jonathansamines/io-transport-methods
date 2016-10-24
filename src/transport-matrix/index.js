@@ -3,11 +3,12 @@
 const debug = require('debug')('transport-matrix');
 const Hoek = require('hoek');
 const minimumCost = require('./minimum-cost');
+const northwestCorner = require('./northwest-corner');
 
 const internals = {
   transportResolvers: {
     minimumCost,
-    northwestCorner: null,
+    northwestCorner,
   },
 };
 
@@ -90,6 +91,7 @@ module.exports = {
 
     /**
      * Resolve a given matrix options
+     * @param {String} transportMethod One of the following (northwestCorner, minimumCost)
      */
     return {
       resolveBy(transportMethod) {
