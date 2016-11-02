@@ -41,15 +41,6 @@ module.exports = {
 
     iteration.distribution = Util.restoreOrdering(iteration.distribution);
 
-    return {
-      iterations: [
-        [
-          iteration,
-        ],
-      ],
-      result: {
-        summary: iteration.summary,
-      },
-    };
+    return iteration;
   },
 };

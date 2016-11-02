@@ -119,9 +119,8 @@ internals.resolveByNorthwestCorner = (options) => {
 };
 
 module.exports = {
-  _resolve: (options) => {
+  _resolve(options) {
     const opts = Hoek.clone(options);
-
     return internals.resolveByNorthwestCorner(opts);
   },
 
@@ -133,15 +132,6 @@ module.exports = {
 
     iteration.distribution = Util.clearOrdering(iteration.distribution);
 
-    return {
-      iterations: [
-        [
-          iteration,
-        ],
-      ],
-      result: {
-        summary: iteration.summary,
-      },
-    };
+    return iteration;
   },
 };

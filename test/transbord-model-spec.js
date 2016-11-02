@@ -76,7 +76,7 @@ const options = {
   ],
 };
 
-describe.only('the transbord model', () => {
+describe('the transbord model', () => {
   it('works as expected', () => {
     const result = io.transbordModel(options);
     console.log(JSON.stringify(result));
