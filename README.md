@@ -9,7 +9,7 @@ A simple algorithmic implementation of some of the most common lineal programmin
 The public API is as follows:
 
 ### `io.transbordModel(options)`
-By describing a transbord model can compute a valid transportModel equivalent by returning a valid object to be computed by using a **transport matrix**.
+Describes a transbord model from which a valid equivalent transport model can be computed. Returns a valid configuration for **transport matrix**.
 
 + `options`
   - `nodes[]` - a node array composing the transbord network.
