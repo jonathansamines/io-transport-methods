@@ -9,6 +9,40 @@ internals.removeEmptyDestinationRoutes = (route) => {
   return route.to.length > 0;
 };
 
+internals.routesCreation = (transportOptions, nodes) => {
+  const totalOriginationAmount = Utils.sumByProperty(nodes, 'output');
+  const totalDestinationAmount = Utils.sumByProperty(nodes, 'input');
+
+  return function createRoute(node) {
+    const route = internals.lookupNodeReferences(nodes, node, null);
+    let origination = null;
+    let destination = null;
+
+    if (route.isOrigination) {
+      origination = {
+        name: route.from.name,
+        supply: route.from.input || totalOriginationAmount,
+      };
+
+      transportOptions.originations.push(origination);
+    }
+
+    if (route.isDestination) {
+      destination = {
+        name: route.from.name,
+        demand: route.from.output || totalDestinationAmount,
+      };
+
+      transportOptions.destinations.push(destination);
+    }
+
+    return {
+      from: route.from.name,
+      to: route.to,
+    };
+  };
+};
+
 internals.completeRoutes = (transportOptions) => {
   return function completeModel(route) {
     const destinations = [];
@@ -78,39 +112,10 @@ internals.lookupReferences = (nodes) => {
     routes: [], // all links
   };
 
-  const totalOriginationAmount = Utils.sumByProperty(nodes, 'output');
-  const totalDestinationAmount = Utils.sumByProperty(nodes, 'input');
-
-  transportOptions.routes = nodes.map((node) => {
-    const route = internals.lookupNodeReferences(nodes, node, null);
-    let origination = null;
-    let destination = null;
-
-    if (route.isOrigination) {
-      origination = {
-        name: route.from.name,
-        supply: route.from.input || totalOriginationAmount,
-      };
-
-      transportOptions.originations.push(origination);
-    }
-
-    if (route.isDestination) {
-      destination = {
-        name: route.from.name,
-        demand: route.from.output || totalDestinationAmount,
-      };
-
-      transportOptions.destinations.push(destination);
-    }
-
-    return {
-      from: route.from.name,
-      to: route.to,
-    };
-  })
-  .filter(internals.removeEmptyDestinationRoutes)
-  .map(internals.completeRoutes(transportOptions));
+  transportOptions.routes = nodes
+    .map(internals.routesCreation(transportOptions, nodes))
+    .filter(internals.removeEmptyDestinationRoutes)
+    .map(internals.completeRoutes(transportOptions));
 
   return transportOptions;
 };
