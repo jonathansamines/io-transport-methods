@@ -125,7 +125,7 @@ module.exports = {
     return internals.resolveByNorthwestCorner(opts);
   },
 
-  resolve: (options) => {
+  resolve(options) {
     debug('resolving by northwest-corner method');
 
     const opts = Hoek.clone(options);

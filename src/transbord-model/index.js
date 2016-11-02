@@ -5,6 +5,34 @@ const Utils = require('./../utils');
 
 const internals = {};
 
+internals.removeEmptyDestinationRoutes = (route) => {
+  return route.to.length > 0;
+};
+
+internals.completeRoutes = (transportOptions) => {
+  return function completeModel(route) {
+    const destinations = [];
+
+    for (const destination of transportOptions.destinations) {
+      const foundDestination = route.to.find((d) => d.destination === destination.name);
+
+      if (foundDestination) {
+        destinations.push(foundDestination);
+        continue;
+      }
+
+      destinations.push({
+        destination: destination.name,
+        cost: 0,
+      });
+    }
+
+    route.to = destinations;
+
+    return route;
+  };
+};
+
 internals.lookupNodeReferences = (nodes, node, parent) => {
   const route = parent || {
     from: {
@@ -26,7 +54,7 @@ internals.lookupNodeReferences = (nodes, node, parent) => {
   node.next.forEach((transbord) => {
     const reference = nodes.find((n) => n.name === transbord.reference);
 
-    Hoek.assert(reference, 'Node reference not found');
+    Hoek.assert(reference, `Node reference (${transbord.reference}) not found`);
 
     if (!parent) {
       route.to.push({
@@ -81,34 +109,20 @@ internals.lookupReferences = (nodes) => {
       to: route.to,
     };
   })
-  .filter((r) => r.to.length > 0)
-  .map((route) => {
-    const destinations = [];
-
-    for (const destination of transportOptions.destinations) {
-      const foundDestination = route.to.find((d) => d.destination === destination.name);
-
-      if (foundDestination) {
-        destinations.push(foundDestination);
-        continue;
-      }
-
-      destinations.push({
-        destination: destination.name,
-        cost: 0,
-      });
-    }
-
-    route.to = destinations;
-
-    return route;
-  });
+  .filter(internals.removeEmptyDestinationRoutes)
+  .map(internals.completeRoutes(transportOptions));
 
   return transportOptions;
 };
 
 module.exports = {
-  create: (options) => {
+
+  /**
+   * Creates a valid transport model from the transbord model provided
+   * @param  {Object} options
+   * @return {Object}
+   */
+  create(options) {
     return internals.lookupReferences(options.nodes);
   },
 };

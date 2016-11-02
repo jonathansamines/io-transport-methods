@@ -1,8 +1,8 @@
 'use strict';
 
+const expect = require('chai').expect;
 const io = require('../src/index');
-const transbordModel = require('../src/transbord-model');
-const transportMatrix = require('../src/transport-matrix');
+const transbordModelResult = require('./fixtures/transbord-model-result.json');
 
 const options = {
   nodes: [
@@ -85,6 +85,9 @@ describe.only('the transbord model', () => {
 
     const resulting = matrix.resolveBy('northwestCorner');
 
+    console.log('');
     console.log(JSON.stringify(resulting));
+
+    expect(resulting).to.be.deep.equal(transbordModelResult);
   });
 });

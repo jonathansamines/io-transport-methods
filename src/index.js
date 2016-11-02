@@ -18,20 +18,23 @@ internals.routeSchema = Joi.object().keys({
     .required(),
 });
 
+internals.transbordNodeSchema = Joi.object().keys({
+  name: Joi.string().required(),
+  type: Joi.string()
+    .allow(['origin', 'destination', 'intermediary'])
+    .required(),
+  input: Joi.number().default(0),
+  output: Joi.number().default(0),
+  next: Joi.array()
+    .items({
+      reference: Joi.string().required(),
+      cost: Joi.number().default(0),
+    })
+    .min(0),
+});
+
 internals.transbordSchema = Joi.object().keys({
-  nodes: Joi.array()
-    .items(Joi.object().keys({
-      name: Joi.string().required(),
-      type: Joi.string().allow(['origin', 'destination', 'intermediary']),
-      input: Joi.number().default(0),
-      output: Joi.number().default(0),
-      next: Joi.array()
-        .items({
-          reference: Joi.string().required(),
-          cost: Joi.number().default(0),
-        })
-        .min(0),
-    })),
+  nodes: Joi.array().items(internals.transbordNodeSchema),
 });
 
 internals.transportSchema = Joi.object().keys({
@@ -87,6 +90,11 @@ internals.createRoutesValidator = (routes) => {
 
 module.exports = {
 
+  /**
+   * Creates a valid transport matrix options object
+   * @param  {Object} options
+   * @return {Object}
+   */
   transbordModel: (options) => {
     const opts = Joi.attempt(options, internals.transbordSchema, 'Invalid options provided');
 

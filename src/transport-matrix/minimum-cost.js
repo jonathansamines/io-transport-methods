@@ -27,7 +27,7 @@ internals.sortByCheaperRoute = (routes) => {
 };
 
 module.exports = {
-  resolve: (opts) => {
+  resolve(opts) {
     debug('resolving transport model by minimum-cost');
 
     const routes = Util.recordOrdering(opts.routes);
