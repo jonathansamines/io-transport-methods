@@ -4,6 +4,7 @@ const debug = require('debug')('main');
 const Joi = require('joi');
 const Hoek = require('hoek');
 const transportMatrixBuilder = require('./transport-matrix');
+const transbordModelBuilder = require('./transbord-model');
 
 const internals = {};
 
@@ -15,6 +16,22 @@ internals.routeSchema = Joi.object().keys({
       cost: Joi.number().required(),
     }))
     .required(),
+});
+
+internals.transbordSchema = Joi.object().keys({
+  nodes: Joi.array()
+    .items(Joi.object().keys({
+      name: Joi.string().required(),
+      type: Joi.string().allow(['origin', 'destination', 'intermediary']),
+      input: Joi.number().default(0),
+      output: Joi.number().default(0),
+      next: Joi.array()
+        .items({
+          reference: Joi.string().required(),
+          cost: Joi.number().default(0),
+        })
+        .min(0),
+    })),
 });
 
 internals.transportSchema = Joi.object().keys({
@@ -69,6 +86,12 @@ internals.createRoutesValidator = (routes) => {
 };
 
 module.exports = {
+
+  transbordModel: (options) => {
+    const opts = Joi.attempt(options, internals.transbordSchema, 'Invalid options provided');
+
+    return transbordModelBuilder.create(opts);
+  },
 
   /**
    * Create the transport matrix logic structure,

@@ -1,15 +1,28 @@
-# IO Transport Methods
-A simple algorithmic implementation of some of the most common IO transport methods.
+# Lineal Programming Transport Methods
+A simple algorithmic implementation of some of the most common lineal programming transport methods and transportation models.
 
 ```bash
-  $ npm install --save io-transport-methods
+  $ npm install --save transport-methods
 ```
 
 ## API
 The public API is as follows:
 
+### `io.transbordModel(options)`
+By describing a transbord model can compute a valid transportModel equivalent by returning a valid object to be computed by using a **transport matrix**.
+
++ `options`
+  - `nodes[]` - a node array composing the transbord network.
+    - `name` - identifier to reference to when linking nodes. **Required**
+    - `type` - any of the following (`origin`, `destination`, `intermediary`). **Required**
+    - `input` - the whole throughput coming to this node. **Required**
+    - `output` - the whole throughput coming out from this node. **Required**
+    - `next[]` - an array of references to other nodes
+      - `reference` another node identifier to reference. **Required**
+      - `cost` the cost of transbording the current node output to the referenced node input. **Required**
+
 ### `io.transportMatrix(options)`
-Describes the complete transport matrix, as specified by the *IO transport methods* specification. The generated matrix can be computed by any of the allowed transport methods. Returns a **TransportMatrix**
+Describes the complete transport matrix, as specified by the *lineal programming transport methods* specification. The generated matrix can be computed by any of the allowed transport methods. Returns a **TransportMatrix**
 
 + `options`
   - `originations` - an array of originations, each origination is an *object* with the following schema.
@@ -30,7 +43,7 @@ If the transport model is not considered complete (the overall supply is differe
 ### TransportMatrix
 It represents the logic form of the transport method. Has the ability to compute the best supply/demand distribution based on the **transport method** specified.
 
-#### `transportMatrix.resolveBy(transportMethod, options)`
+#### `transportMatrix.resolveBy(transportMethod)`
 
 + `transportMethod` - any of the allowed transport methods: [`minimumCost`, `northwestCorner`]
 

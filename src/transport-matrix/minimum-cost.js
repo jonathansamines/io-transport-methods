@@ -18,7 +18,11 @@ internals.sortByCheaperRoute = (routes) => {
     const cheaperDest1 = internals.sortByCheaperDestination(route1.to);
     const cheaperDest2 = internals.sortByCheaperDestination(route2.to);
 
-    return cheaperDest1[0].cost - cheaperDest2[0].cost;
+    if (cheaperDest1[0] && cheaperDest2[0]) {
+      return cheaperDest1[0].cost - cheaperDest2[0].cost;
+    }
+
+    return 0;
   });
 };
 
