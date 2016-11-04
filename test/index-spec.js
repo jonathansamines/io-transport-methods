@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const ioModule = require('./../src/index');
+const ioModule = require('./../');
 
 describe('the io module', () => {
   it('when imported has a single "transportMatrix" method', () => {

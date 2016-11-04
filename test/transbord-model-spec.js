@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const io = require('../src/index');
+const io = require('../index');
 const transbordModelResult = require('./fixtures/transbord-model-result.json');
 
 const options = {

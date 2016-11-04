@@ -3,8 +3,8 @@
 const debug = require('debug')('main');
 const Joi = require('joi');
 const Hoek = require('hoek');
-const transportMatrixBuilder = require('./transport-matrix');
-const transbordModelBuilder = require('./transbord-model');
+const transportMatrixBuilder = require('./src/transport-matrix');
+const transbordModelBuilder = require('./src/transbord-model');
 
 const internals = {};
 
@@ -34,7 +34,9 @@ internals.transbordNodeSchema = Joi.object().keys({
 });
 
 internals.transbordSchema = Joi.object().keys({
-  nodes: Joi.array().items(internals.transbordNodeSchema),
+  nodes: Joi.array()
+    .items(internals.transbordNodeSchema)
+    .required(),
 });
 
 internals.transportSchema = Joi.object().keys({
