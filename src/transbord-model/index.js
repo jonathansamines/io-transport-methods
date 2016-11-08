@@ -161,7 +161,7 @@ internals.lookupReferences = (nodes) => {
     }
 
   // more originations than destinations
-  } else if (buffer.destinations.length > 0) {
+  } else if (bufferNumberDiff < 0 && buffer.destinations.length > 0) {
     buffer
       .destinations
       .forEach((destination, index) => {
