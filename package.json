@@ -1,6 +1,6 @@
 {
   "name": "transport-methods",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple lineal programming transport methods algorithmic implementation",
   "main": "index.js",
   "scripts": {
