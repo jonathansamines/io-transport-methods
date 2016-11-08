@@ -10,8 +10,10 @@ internals.removeEmptyDestinationRoutes = (route) => {
 };
 
 internals.routesCreation = (transportOptions, nodes) => {
-  const totalOriginationAmount = Utils.sumByProperty(nodes, 'output');
-  const totalDestinationAmount = Utils.sumByProperty(nodes, 'input');
+  transportOptions.buffer = {
+    destinations: [],
+    originations: [],
+  };
 
   return function createRoute(node) {
     const route = internals.lookupNodeReferences(nodes, node, null);
@@ -19,19 +21,31 @@ internals.routesCreation = (transportOptions, nodes) => {
     let destination = null;
 
     if (route.isOrigination) {
+      const isBufferApplied = route.from.input === 0;
+
       origination = {
         name: route.from.name,
-        supply: route.from.input || totalOriginationAmount,
+        supply: route.from.input,
       };
+
+      if (isBufferApplied) {
+        transportOptions.buffer.originations.push(origination);
+      }
 
       transportOptions.originations.push(origination);
     }
 
     if (route.isDestination) {
+      const isBufferApplied = route.from.output === 0;
+
       destination = {
         name: route.from.name,
-        demand: route.from.output || totalDestinationAmount,
+        demand: route.from.output,
       };
+
+      if (isBufferApplied) {
+        transportOptions.buffer.destinations.push(destination);
+      }
 
       transportOptions.destinations.push(destination);
     }
@@ -112,10 +126,41 @@ internals.lookupReferences = (nodes) => {
     routes: [], // all links
   };
 
+  const totalOriginationAmount = Utils.sumByProperty(nodes, 'output');
+  const totalDestinationAmount = Utils.sumByProperty(nodes, 'input');
+
   transportOptions.routes = nodes
     .map(internals.routesCreation(transportOptions, nodes))
     .filter(internals.removeEmptyDestinationRoutes)
     .map(internals.completeRoutes(transportOptions));
+
+  const buffer = transportOptions.buffer;
+  const bufferNumberDiff = buffer.destinations.length - buffer.originations.length;
+
+  delete transportOptions.buffer;
+
+  // more destinations than originations
+  if (bufferNumberDiff >= 0) {
+    buffer
+      .originations
+      .forEach((origination, index) => {
+        const destination = buffer.destinations[index];
+
+        destination.demand += totalDestinationAmount;
+        origination.supply += totalOriginationAmount;
+      });
+
+    return transportOptions;
+  }
+
+  // compute the buffer values for the difference
+  for (let idx = 0; idx < bufferNumberDiff; idx += 1) {
+    const origination = buffer.originations[0];
+    const destination = buffer.destinations[idx];
+
+    destination.demand += totalDestinationAmount;
+    origination.supply += totalOriginationAmount;
+  }
 
   return transportOptions;
 };
