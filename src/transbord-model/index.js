@@ -140,7 +140,7 @@ internals.lookupReferences = (nodes) => {
   delete transportOptions.buffer;
 
   // more destinations than originations
-  if (bufferNumberDiff >= 0 && buffer.originations.length > 0) {
+  if (bufferNumberDiff >= 0) {
     buffer
       .originations
       .forEach((origination, index) => {
@@ -153,7 +153,7 @@ internals.lookupReferences = (nodes) => {
     // compute the buffer values for the difference
     for (let idx = buffer.originations.length; idx < buffer.destinations.length; idx += 1) {
       // assign to any origination, since all originations are already covered
-      const origination = buffer.originations[0];
+      const origination = buffer.originations[0] || transportOptions.originations[0];
       const destination = buffer.destinations[idx];
 
       destination.demand += totalDestinationAmount;
@@ -161,7 +161,7 @@ internals.lookupReferences = (nodes) => {
     }
 
   // more originations than destinations
-  } else if (bufferNumberDiff < 0 && buffer.destinations.length > 0) {
+  } else if (bufferNumberDiff < 0) {
     buffer
       .destinations
       .forEach((destination, index) => {
@@ -174,7 +174,7 @@ internals.lookupReferences = (nodes) => {
     // compute the buffer values for the difference
     for (let idx = buffer.destinations.length; idx < buffer.originations.length; idx += 1) {
       // assign to any destination, since all destinations are already covered
-      const destination = buffer.destinations[0];
+      const destination = buffer.destinations[0] || transportOptions.destinations[0];
       const origination = buffer.originations[idx];
 
       destination.demand += totalDestinationAmount;
