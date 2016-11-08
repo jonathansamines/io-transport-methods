@@ -4,8 +4,8 @@
   "description": "A simple lineal programming transport methods algorithmic implementation",
   "main": "index.js",
   "scripts": {
-    "test": "mocha .",
-    "test:watch": "mocha . -w"
+    "test": "mocha test/**",
+    "test:watch": "mocha test/** -w"
   },
   "repository": {
     "type": "git",
