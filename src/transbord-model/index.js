@@ -150,16 +150,36 @@ internals.lookupReferences = (nodes) => {
         origination.supply += totalOriginationAmount;
       });
 
-    return transportOptions;
-  }
+    // compute the buffer values for the difference
+    for (let idx = buffer.originations.length; idx < buffer.destinations.length; idx += 1) {
+      // assign to any origination, since all originations are already covered
+      const origination = buffer.originations[0];
+      const destination = buffer.destinations[idx];
 
-  // compute the buffer values for the difference
-  for (let idx = 0; idx < bufferNumberDiff; idx += 1) {
-    const origination = buffer.originations[0];
-    const destination = buffer.destinations[idx];
+      destination.demand += totalDestinationAmount;
+      origination.supply += totalOriginationAmount;
+    }
 
-    destination.demand += totalDestinationAmount;
-    origination.supply += totalOriginationAmount;
+  // more originations than destinations
+  } else {
+    buffer
+      .destinations
+      .forEach((destination, index) => {
+        const origination = buffer.originations[index];
+
+        destination.demand += totalDestinationAmount;
+        origination.supply += totalOriginationAmount;
+      });
+
+    // compute the buffer values for the difference
+    for (let idx = buffer.destinations.length; idx < buffer.originations.length; idx += 1) {
+      // assign to any destination, since all destinations are already covered
+      const destination = buffer.destinations[0];
+      const origination = buffer.originations[idx];
+
+      destination.demand += totalDestinationAmount;
+      origination.supply += totalOriginationAmount;
+    }
   }
 
   return transportOptions;

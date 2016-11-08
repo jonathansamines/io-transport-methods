@@ -82,6 +82,7 @@ describe('the transbord model', () => {
     const matrix = io.transportMatrix(result);
     const resulting = matrix.resolveBy('northwestCorner');
 
+    console.log(JSON.stringify(result));
     console.log('');
     console.log(JSON.stringify(resulting));
 
