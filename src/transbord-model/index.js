@@ -140,7 +140,7 @@ internals.lookupReferences = (nodes) => {
   delete transportOptions.buffer;
 
   // more destinations than originations
-  if (bufferNumberDiff >= 0) {
+  if (bufferNumberDiff >= 0 && buffer.originations.length > 0) {
     buffer
       .originations
       .forEach((origination, index) => {
@@ -161,7 +161,7 @@ internals.lookupReferences = (nodes) => {
     }
 
   // more originations than destinations
-  } else {
+  } else if (buffer.destinations.length > 0) {
     buffer
       .destinations
       .forEach((destination, index) => {
